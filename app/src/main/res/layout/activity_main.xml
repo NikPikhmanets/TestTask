@@ -9,6 +9,7 @@
         android:id="@+id/rv_list_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/item_rv" />
+        tools:listitem="@layout/item_rv"
+        android:background="@android:color/darker_gray"/>
 
 </android.support.constraint.ConstraintLayout>

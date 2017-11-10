@@ -1,5 +1,5 @@
 package com.pikhmanets.testtask;
 
 public interface OnItemTitleClickListener {
-    void onItemTitleClick(ItemPost mTitle);
+    void onItemTitleClick(News mTitle);
 }

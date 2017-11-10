@@ -12,9 +12,9 @@ import java.util.List;
 public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
 
     private OnItemTitleClickListener listener;
-    private List<ItemPost> mTitleList = new ArrayList<>();
+    private List<News> mTitleList = new ArrayList<>();
 
-    RvAdapter(List<ItemPost> titleList) {
+    RvAdapter(List<News> titleList) {
         mTitleList = titleList;
     }
 
@@ -55,13 +55,13 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
             });
         }
 
-        void bind(ItemPost mTitle) {
-            titleText.setText(mTitle.getItemTitle());
-            timeText.setText(mTitle.getItemPostTime());
+        void bind(News mTitle) {
+            titleText.setText(mTitle.getTitle());
+            timeText.setText(String.format("Posted: %s", mTitle.getPostTime()));
         }
     }
 
-    public void setListener(OnItemTitleClickListener listener) {
+    void setListener(OnItemTitleClickListener listener) {
         this.listener = listener;
     }
 }
