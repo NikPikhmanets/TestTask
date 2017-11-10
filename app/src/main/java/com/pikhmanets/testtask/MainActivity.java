@@ -104,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
                 intent.putExtra(INTENT_TITLE, mTitle.getTitle());
-                intent.putExtra(INTENT_POST, mTitle.getTextNews());
+//                intent.putExtra(INTENT_POST, mTitle.getTextNews());
+                intent.putExtra(INTENT_POST, mTitle.getRefNews());
                 startActivity(intent);
             }
         });

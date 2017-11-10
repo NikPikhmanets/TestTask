@@ -1,10 +1,11 @@
 package com.pikhmanets.testtask;
 
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import static com.pikhmanets.testtask.MainActivity.INTENT_POST;
 import static com.pikhmanets.testtask.MainActivity.INTENT_TITLE;
@@ -26,7 +27,16 @@ public class WebViewActivity extends AppCompatActivity {
         setTitle(title);
         String text = getIntent().getStringExtra(INTENT_POST);
         WebView wView = findViewById(R.id.webview);
-        wView.loadData(text, "text/html; charset=utf-8", "UTF-8");
+//        wView.loadData(text, "text/html; charset=utf-8", "UTF-8");
+
+        wView.loadUrl(text);
+        wView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+        });
     }
 
     @Override

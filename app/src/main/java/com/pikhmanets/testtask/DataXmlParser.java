@@ -47,6 +47,7 @@ class DataXmlParser {
         String title = null;
         String time = null;
         String text = null;
+        String link = null;
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -62,12 +63,15 @@ class DataXmlParser {
                 case "content":
                     text = readNewsText(parser);
                     break;
+                case "link":
+                    link = readLink(parser);
+                    break;
                 default:
                     skip(parser);
                     break;
             }
         }
-        return new News(title, time, text);
+        return new News(title, time, text, link);
     }
 
     private String readTime(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -98,8 +102,6 @@ class DataXmlParser {
     private String readNewsText(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "content");
         String text = readText(parser);
-
-
         parser.require(XmlPullParser.END_TAG, null, "content");
         return text;
     }
@@ -118,5 +120,20 @@ class DataXmlParser {
             parser.nextTag();
         }
         return result;
+    }
+
+    private String readLink(XmlPullParser parser) throws IOException, XmlPullParserException {
+        String link = "";
+        parser.require(XmlPullParser.START_TAG, null, "link");
+        String tag = parser.getName();
+        String relType = parser.getAttributeValue(null, "rel");
+        if (tag.equals("link")) {
+            if (relType.equals("alternate")) {
+                link = parser.getAttributeValue(null, "href");
+            }
+        }
+        parser.nextTag();
+        parser.require(XmlPullParser.END_TAG, null, "link");
+        return link;
     }
 }
