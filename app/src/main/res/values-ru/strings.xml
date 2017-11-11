@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TestTask</string>
+    <string name="load_err">Ошибка загрузки</string>
+    <string name="err_connect">Ошибка подключения</string>
+    <string name="err_parse">Ошибка разбора данных</string>
+</resources>

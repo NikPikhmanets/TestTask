@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import static com.pikhmanets.testtask.MainActivity.INTENT_POST;
+import static com.pikhmanets.testtask.MainActivity.INTENT_LINK;
 import static com.pikhmanets.testtask.MainActivity.INTENT_TITLE;
 
 public class WebViewActivity extends AppCompatActivity {
@@ -25,7 +25,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         String title = getIntent().getStringExtra(INTENT_TITLE);
         setTitle(title);
-        String text = getIntent().getStringExtra(INTENT_POST);
+        String text = getIntent().getStringExtra(INTENT_LINK);
         WebView wView = findViewById(R.id.webview);
 //        wView.loadData(text, "text/html; charset=utf-8", "UTF-8");
 

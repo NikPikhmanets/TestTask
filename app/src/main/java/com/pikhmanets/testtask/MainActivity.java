@@ -3,9 +3,11 @@ package com.pikhmanets.testtask;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -19,7 +21,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static String INTENT_TITLE = "title";
-    public static String INTENT_POST = "post";
+    public static String INTENT_LINK = "post";
+
+    public static String ERR_CONNECT = "connect";
+    public static String ERR_PARSE = "parse";
+
     final String URL = "http://feeds.feedburner.com/blogspot/hsDu";
 
 //    Elements mElementsTitle;
@@ -30,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     List<News> mNewsList = new ArrayList<>();
 
+    ParsingDataTask parsingDataTask;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,11 +48,32 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setScrollbarFadingEnabled(true);
 
-        ParsingDataTask parsingDataTask = new ParsingDataTask(URL);
-        parsingDataTask.execute();
+        mSwipeRefreshLayout = findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout.setColorScheme(
+                R.color.swipe_color_1, R.color.swipe_color_2,
+                R.color.swipe_color_3, R.color.swipe_color_4);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (parsingDataTask != null) {
+                    parsingDataTask.cancel(true);
+                }
+                loadData();
+            }
+        });
+
+        loadData();
     }
 
-    class ParsingDataTask extends AsyncTask<Void, Void, Void> {
+    private void loadData() {
+        if (parsingDataTask == null) {
+            parsingDataTask = new ParsingDataTask(URL);
+            parsingDataTask.execute();
+        }
+    }
+
+    class ParsingDataTask extends AsyncTask<Void, String, Void> {
 
         String urlBase;
 
@@ -59,8 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 URL url = new URL(urlBase);
                 connection = (HttpURLConnection) url.openConnection();
                 mNewsList = dataXmlParser.parse(new BufferedInputStream(connection.getInputStream()));
-            } catch (IOException | XmlPullParserException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
+                publishProgress(ERR_CONNECT);
+            } catch (XmlPullParserException x) {
+                x.printStackTrace();
+                publishProgress(ERR_PARSE);
             } finally {
                 if (connection != null) {
                     connection.disconnect();
@@ -88,10 +122,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            if (values[0].equals(ERR_CONNECT)) {
+                Toast.makeText(MainActivity.this, R.string.err_connect, Toast.LENGTH_SHORT).show();
+            }
+            if (values[0].equals(ERR_PARSE)) {
+                Toast.makeText(MainActivity.this, R.string.err_parse, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            if (mNewsList == null) return;
+            parsingDataTask = null;
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (mNewsList == null) {
+                Toast.makeText(MainActivity.this, R.string.load_err, Toast.LENGTH_SHORT).show();
+                return;
+            }
             buildList();
         }
     }
@@ -105,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
                 intent.putExtra(INTENT_TITLE, mTitle.getTitle());
 //                intent.putExtra(INTENT_POST, mTitle.getTextNews());
-                intent.putExtra(INTENT_POST, mTitle.getRefNews());
+                intent.putExtra(INTENT_LINK, mTitle.getRefNews());
                 startActivity(intent);
             }
         });
