@@ -3,4 +3,5 @@
     <string name="load_err">Load error</string>
     <string name="err_connect">Err connect</string>
     <string name="err_parse">Err parse</string>
+    <string name="loading">Loading…</string>
 </resources>

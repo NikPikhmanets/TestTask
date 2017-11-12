@@ -4,4 +4,5 @@
     <string name="load_err">Помилка завантаження</string>
     <string name="err_connect">Помилка підключення</string>
     <string name="err_parse">Помилка данних</string>
+    <string name="loading">Завантаження…</string>
 </resources>

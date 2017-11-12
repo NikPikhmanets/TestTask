@@ -4,8 +4,12 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import static com.pikhmanets.testtask.MainActivity.INTENT_LINK;
 import static com.pikhmanets.testtask.MainActivity.INTENT_TITLE;
@@ -26,6 +30,10 @@ public class WebViewActivity extends AppCompatActivity {
         String title = getIntent().getStringExtra(INTENT_TITLE);
         setTitle(title);
         String text = getIntent().getStringExtra(INTENT_LINK);
+
+        final TextView txtview = findViewById(R.id.loading);
+        final ProgressBar pbar =  findViewById(R.id.progressbar);
+
         WebView wView = findViewById(R.id.webview);
 //        wView.loadData(text, "text/html; charset=utf-8", "UTF-8");
 
@@ -35,6 +43,20 @@ public class WebViewActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
+            }
+        });
+        wView.setWebChromeClient(new WebChromeClient() {
+            public void onProgressChanged(WebView view, int progress) {
+                if(progress < 100 && pbar.getVisibility() == ProgressBar.GONE){
+                    pbar.setVisibility(ProgressBar.VISIBLE);
+                    txtview.setVisibility(View.VISIBLE);
+                }
+
+                pbar.setProgress(progress);
+                if(progress == 100) {
+                    pbar.setVisibility(ProgressBar.GONE);
+                    txtview.setVisibility(View.GONE);
+                }
             }
         });
     }
