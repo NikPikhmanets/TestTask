@@ -2,6 +2,8 @@ package com.pikhmanets.testtask;
 
 import android.os.AsyncTask;
 
+import com.pikhmanets.testtask.list.model.News;
+
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedInputStream;
@@ -15,11 +17,11 @@ import static com.pikhmanets.testtask.MainActivity.ERR_CONNECT;
 import static com.pikhmanets.testtask.MainActivity.ERR_PARSE;
 
 
-public class LoadParsingDataTask extends AsyncTask<Void, String, List<News>> {
+public class LoaderDataTask extends AsyncTask<Void, String, List<News>> {
 
     private String urlBase;
 
-    LoadParsingDataTask(String urlBase) {
+    LoaderDataTask(String urlBase) {
         this.urlBase = urlBase;
     }
 

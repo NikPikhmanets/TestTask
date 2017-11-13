@@ -8,9 +8,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import com.pikhmanets.testtask.list.OnItemClickListener;
+import com.pikhmanets.testtask.list.RvAdapter;
+import com.pikhmanets.testtask.list.model.News;
+
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoadParsingDataTask.TaskCallback {
+public class MainActivity extends AppCompatActivity implements LoaderDataTask.TaskCallback {
 
     public static String INTENT_TITLE = "title";
     public static String INTENT_LINK = "post";
@@ -23,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements LoadParsingDataTa
     RvAdapter mRvAdapter;
     RecyclerView mRecyclerView;
 
-    LoadParsingDataTask mLoadParsingDataTask;
+    LoaderDataTask mLoaderDataTask;
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
@@ -43,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements LoadParsingDataTa
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (mLoadParsingDataTask != null) {
-                    mLoadParsingDataTask.cancel(true);
+                if (mLoaderDataTask != null) {
+                    mLoaderDataTask.cancel(true);
                 }
                 loadData();
             }
@@ -54,10 +58,10 @@ public class MainActivity extends AppCompatActivity implements LoadParsingDataTa
     }
 
     private void loadData() {
-        if (mLoadParsingDataTask == null) {
-            mLoadParsingDataTask = new LoadParsingDataTask(URL);
-            mLoadParsingDataTask.registerCallBack(this);
-            mLoadParsingDataTask.execute();
+        if (mLoaderDataTask == null) {
+            mLoaderDataTask = new LoaderDataTask(URL);
+            mLoaderDataTask.registerCallBack(this);
+            mLoaderDataTask.execute();
         }
     }
 
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements LoadParsingDataTa
 
     @Override
     public void callBackPostExecute(List<News> news) {
-        mLoadParsingDataTask = null;
+        mLoaderDataTask = null;
         mSwipeRefreshLayout.setRefreshing(false);
         if (news == null) {
             Toast.makeText(MainActivity.this, R.string.load_err, Toast.LENGTH_SHORT).show();

@@ -2,6 +2,8 @@ package com.pikhmanets.testtask;
 
 import android.util.Xml;
 
+import com.pikhmanets.testtask.list.model.News;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

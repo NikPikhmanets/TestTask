@@ -1,19 +1,19 @@
-package com.pikhmanets.testtask;
+package com.pikhmanets.testtask.list.model;
 
-class News {
+public class News {
     private String mTitle;
     private String mPostTime;
     private String mTextNews;
     private String mRefNews;
 
-    News(String title, String postTime, String textNews, String ref) {
+    public News(String title, String postTime, String textNews, String ref) {
         mTitle = title;
         mPostTime = postTime;
         mTextNews = textNews;
         mRefNews = ref;
     }
 
-    String getTitle() {
+    public String getTitle() {
         return mTitle;
     }
 
@@ -21,7 +21,7 @@ class News {
         this.mTitle = title;
     }
 
-    String getPostTime() {
+    public String getPostTime() {
         return mPostTime;
     }
 
@@ -37,7 +37,7 @@ class News {
         this.mTextNews = textNews;
     }
 
-    String getRefNews() {
+    public String getRefNews() {
         return mRefNews;
     }
 
