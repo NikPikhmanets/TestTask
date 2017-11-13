@@ -1,7 +1,6 @@
 package com.pikhmanets.testtask;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -9,16 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoadParsingDataTask.TaskCallback {
 
     public static String INTENT_TITLE = "title";
     public static String INTENT_LINK = "post";
@@ -28,15 +20,10 @@ public class MainActivity extends AppCompatActivity {
 
     final String URL = "http://feeds.feedburner.com/blogspot/hsDu";
 
-//    Elements mElementsTitle;
-//    Elements mElementsTime;
-//    Elements mElementsPost;
-
     RvAdapter mRvAdapter;
     RecyclerView mRecyclerView;
-    List<News> mNewsList = new ArrayList<>();
 
-    ParsingDataTask parsingDataTask;
+    LoadParsingDataTask mLoadParsingDataTask;
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
@@ -56,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (parsingDataTask != null) {
-                    parsingDataTask.cancel(true);
+                if (mLoadParsingDataTask != null) {
+                    mLoadParsingDataTask.cancel(true);
                 }
                 loadData();
             }
@@ -67,88 +54,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        if (parsingDataTask == null) {
-            parsingDataTask = new ParsingDataTask(URL);
-            parsingDataTask.execute();
+        if (mLoadParsingDataTask == null) {
+            mLoadParsingDataTask = new LoadParsingDataTask(URL);
+            mLoadParsingDataTask.registerCallBack(this);
+            mLoadParsingDataTask.execute();
         }
     }
 
-    class ParsingDataTask extends AsyncTask<Void, String, Void> {
-
-        String urlBase;
-
-        ParsingDataTask(String url) {
-            urlBase = url;
+    @Override
+    public void callBackProgress(String res) {
+        if (res.equals(ERR_CONNECT)) {
+            Toast.makeText(MainActivity.this, R.string.err_connect, Toast.LENGTH_SHORT).show();
         }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            DataXmlParser dataXmlParser = new DataXmlParser();
-            HttpURLConnection connection = null;
-            try {
-                URL url = new URL(urlBase);
-                connection = (HttpURLConnection) url.openConnection();
-                mNewsList = dataXmlParser.parse(new BufferedInputStream(connection.getInputStream()));
-            } catch (IOException e) {
-                e.printStackTrace();
-                publishProgress(ERR_CONNECT);
-            } catch (XmlPullParserException x) {
-                x.printStackTrace();
-                publishProgress(ERR_PARSE);
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-            }
-//            try {
-//                Document doc = Jsoup.connect(Url).get();
-//                String page = doc.getElementsByTag("openSearch:itemsPerPage").text();
-//                mElementsTitle = doc.getElementsByTag("title");
-//                mElementsTime = doc.getElementsByTag("updated");
-//                mElementsPost = doc.getElementsByTag("content");
-//
-//                mNewsList.clear();
-//                for (int i = 1; i <= mElementsPost.size(); i++) {
-//                    News itemPost = new News();
-//                    itemPost.setTitle(mElementsTitle.get(i).text());
-//                    itemPost.setPostTime(mElementsTime.get(i - 1).text());
-//                    itemPost.setTextNews(mElementsPost.get(i - 1).text());
-//                    mNewsList.add(itemPost);
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            if (values[0].equals(ERR_CONNECT)) {
-                Toast.makeText(MainActivity.this, R.string.err_connect, Toast.LENGTH_SHORT).show();
-            }
-            if (values[0].equals(ERR_PARSE)) {
-                Toast.makeText(MainActivity.this, R.string.err_parse, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            parsingDataTask = null;
-            mSwipeRefreshLayout.setRefreshing(false);
-            if (mNewsList == null) {
-                Toast.makeText(MainActivity.this, R.string.load_err, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            buildList();
+        if (res.equals(ERR_PARSE)) {
+            Toast.makeText(MainActivity.this, R.string.err_parse, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void buildList() {
-        mRvAdapter = new RvAdapter(mNewsList);
-        mRvAdapter.setListener(new OnItemTitleClickListener() {
+    @Override
+    public void callBackPostExecute(List<News> news) {
+        mLoadParsingDataTask = null;
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (news == null) {
+            Toast.makeText(MainActivity.this, R.string.load_err, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        buildList(news);
+    }
+
+    private void buildList(List<News> news) {
+        mRvAdapter = new RvAdapter(news);
+        mRvAdapter.setListener(new OnItemClickListener() {
             @Override
             public void onItemTitleClick(News mTitle) {
 

@@ -34,7 +34,7 @@ public class WebViewActivity extends AppCompatActivity {
         final TextView txtview = findViewById(R.id.loading);
         final ProgressBar pbar =  findViewById(R.id.progressbar);
 
-        WebView wView = findViewById(R.id.webview);
+        final WebView wView = findViewById(R.id.webview);
 //        wView.loadData(text, "text/html; charset=utf-8", "UTF-8");
 
         wView.loadUrl(text);
@@ -48,6 +48,7 @@ public class WebViewActivity extends AppCompatActivity {
         wView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
                 if(progress < 100 && pbar.getVisibility() == ProgressBar.GONE){
+                    wView.setVisibility(View.GONE);
                     pbar.setVisibility(ProgressBar.VISIBLE);
                     txtview.setVisibility(View.VISIBLE);
                 }
@@ -56,6 +57,7 @@ public class WebViewActivity extends AppCompatActivity {
                 if(progress == 100) {
                     pbar.setVisibility(ProgressBar.GONE);
                     txtview.setVisibility(View.GONE);
+                    wView.setVisibility(View.VISIBLE);
                 }
             }
         });

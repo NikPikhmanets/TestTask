@@ -37,7 +37,7 @@ class News {
         this.mTextNews = textNews;
     }
 
-    public String getRefNews() {
+    String getRefNews() {
         return mRefNews;
     }
 

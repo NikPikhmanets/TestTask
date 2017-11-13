@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
 
-    private OnItemTitleClickListener listener;
+    private OnItemClickListener listener;
     private List<News> mTitleList = new ArrayList<>();
 
     RvAdapter(List<News> titleList) {
@@ -61,7 +61,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
         }
     }
 
-    void setListener(OnItemTitleClickListener listener) {
+    void setListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 }
